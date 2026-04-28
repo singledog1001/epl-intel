@@ -28,6 +28,149 @@
   --db:'DM Sans',sans-serif;
   --dm:'JetBrains Mono',monospace;
 }
+
+
+
+
+/* ── Bet365 accordion style ── */
+.b365-section{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);
+  margin-bottom:4px;overflow:hidden}
+.b365-header{display:flex;justify-content:space-between;align-items:center;
+  padding:14px 16px;cursor:pointer;user-select:none;transition:background .1s}
+.b365-header:hover{background:var(--bg3)}
+.b365-title{font-size:13px;font-weight:700;color:var(--i0)}
+.b365-sub{font-size:10px;color:var(--acid);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;margin-top:2px}
+.b365-chevron{color:var(--i2);font-size:12px;transition:transform .2s}
+.b365-chevron.open{transform:rotate(180deg)}
+.b365-body{display:none;border-top:1px solid var(--bd)}
+.b365-body.open{display:block}
+/* Player rows inside accordion */
+.b365-player-row{display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;border-bottom:1px solid var(--bd);transition:background .1s}
+.b365-player-row:last-child{border-bottom:none}
+.b365-player-row:hover{background:var(--bg3)}
+.b365-player-name{font-size:13px;font-weight:600;color:var(--i0)}
+.b365-player-team{font-size:10px;color:var(--i2);margin-top:1px}
+.b365-prob-badge{display:flex;align-items:center;gap:8px}
+.b365-pct{font-size:14px;font-weight:800;font-family:var(--dm);min-width:44px;text-align:right}
+.b365-bar{width:60px;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.b365-bar-fill{height:4px;border-radius:2px}
+.b365-fair-odds{font-size:10px;color:var(--i2);min-width:50px;text-align:right}
+/* Category filter tabs (like bet365 Popular/Cards/Corners etc) */
+.b365-tabs{display:flex;gap:0;border-bottom:1px solid var(--bd);margin-bottom:0;overflow-x:auto}
+.b365-tab{padding:10px 16px;font-size:12px;font-weight:700;cursor:pointer;
+  color:var(--i2);border-bottom:2px solid transparent;transition:all .15s;
+  white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;
+  font-family:inherit}
+.b365-tab:hover{color:var(--i0);background:var(--bg3)}
+.b365-tab.on{color:var(--acid);border-bottom-color:var(--acid);background:rgba(0,255,194,.04)}
+/* Match header like bet365 */
+.match-header{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);
+  padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.match-teams{flex:1}
+.match-vs{font-size:16px;font-weight:800;color:var(--i0);letter-spacing:.02em}
+.match-meta{font-size:10px;color:var(--i2);margin-top:3px}
+.match-ref-badge{background:var(--gold2);border:1px solid rgba(255,193,69,.3);
+  border-radius:20px;padding:4px 10px;font-size:10px;font-weight:700;color:var(--gold)}
+.match-stats-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.match-stat-pill{background:var(--bg3);border:1px solid var(--bd);border-radius:20px;
+  padding:3px 10px;font-size:10px;color:var(--i1)}
+.match-stat-pill strong{color:var(--i0)}
+/* Body light adjustments */
+body.light .b365-section{border-color:#d0d4e4}
+body.light .b365-header:hover{background:#eef0f6}
+body.light .b365-player-row:hover{background:#eef0f6}
+body.light .b365-tab.on{color:var(--acid);border-bottom-color:var(--acid)}
+
+
+/* ══ Split Panel (Bet Builder + Match Analysis) ══ */
+@media(min-width:901px){
+  /* Split container replaces normal .main layout */
+  .main.split-on{
+    overflow:hidden;
+  }
+  .split-container{
+    display:grid;
+    grid-template-columns:1fr 4px 1fr;
+    overflow:hidden;
+    height:calc(100vh - 45px);
+    width:100%;
+  }
+  .split-left,.split-right{
+    overflow-y:auto;
+    padding:16px;
+    height:100%;
+  }
+  .split-left{border-right:0}
+  .split-gutter{
+    background:var(--bd2);
+    cursor:col-resize;
+    position:relative;
+    transition:background .15s;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .split-gutter:hover,.split-gutter.drag{background:var(--acid);}
+  .split-gutter-handle{
+    width:12px;height:40px;border-radius:6px;
+    background:var(--bd2);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    transition:background .15s;
+  }
+  .split-gutter:hover .split-gutter-handle,.split-gutter.drag .split-gutter-handle{
+    background:var(--acid);
+  }
+  .split-gutter-dot{width:3px;height:3px;border-radius:50%;background:var(--bg1);}
+  /* Labels */
+  .split-label{
+    font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--i2);padding:0 0 10px;margin-bottom:10px;
+    border-bottom:1px solid var(--bd);display:flex;
+    align-items:center;justify-content:space-between;
+  }
+  /* Hide pages that are embedded */
+  .main.split-on #pg-builder{display:block!important}
+  .main.split-on #pg-match{display:block!important}
+}
+/* Split toggle button style */
+.bb-split-btn{
+  display:none;
+  align-items:center;gap:6px;justify-content:center;
+  background:var(--bg3);border:1px solid var(--bd);
+  border-radius:var(--r2);padding:7px 14px;
+  font-size:11px;font-weight:700;color:var(--i1);
+  cursor:pointer;font-family:inherit;transition:all .15s;
+  margin-bottom:12px;width:100%;justify-content:center;
+}
+@media(min-width:901px){.bb-split-btn{display:flex;}}
+.bb-split-btn:hover{border-color:var(--acid);color:var(--acid);}
+.bb-split-btn.on{
+  background:var(--acid3);border-color:rgba(0,255,194,.3);color:var(--acid);
+}
+body.light .split-gutter{background:#d0d4e4;}
+body.light .split-gutter-handle{background:#d0d4e4;}
+
+/* Help text / tooltips */
+.help-bar{background:rgba(0,255,194,.06);border:1px solid rgba(0,255,194,.15);
+  border-radius:var(--r);padding:10px 14px;margin-bottom:16px;
+  font-size:12px;color:var(--i1);line-height:1.7;display:flex;gap:10px;align-items:flex-start}
+.help-bar .hi{font-size:18px;flex-shrink:0;margin-top:1px}
+.help-bar strong{color:var(--acid)}
+.prob-label{font-size:9px;color:var(--i2);letter-spacing:.04em}
+/* Probability color legend */
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--i2)}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+/* Simplified stat boxes */
+.stat-explain{font-size:10px;color:var(--i2);margin-top:2px;line-height:1.4}
+/* Odds to prob helper */
+.odds-helper{background:var(--bg3);border-radius:var(--r2);padding:8px 12px;
+  font-size:11px;color:var(--i2);margin-top:8px}
+.odds-helper strong{color:var(--i0)}
+body.light .help-bar{background:rgba(0,138,106,.06);border-color:rgba(0,138,106,.2);color:#374151}
+body.light .help-bar strong{color:var(--acid)}
+
 /* Light theme */
 body.light{
   --bg0:#f0f2f7;--bg1:#ffffff;--bg2:#f8f9fc;--bg3:#eef0f6;--bg4:#e4e7f0;
@@ -343,22 +486,22 @@ tbody tr:hover td{background:rgba(255,255,255,.015)}
   <nav class="nav">
     <div class="nav-sec">今場</div>
     <div class="nav-item on" onclick="go('match')" id="nv-match"><span class="ico">⚡</span>今場分析</div>
-    <div class="nav-item" onclick="go('builder')" id="nv-builder"><span class="ico">🔗</span>Bet Builder</div>
+    <div class="nav-item" onclick="goBuilder()" id="nv-builder"><span class="ico">🔗</span>Bet Builder</div>
     <div class="nav-sec">球員</div>
-    <div class="nav-item" onclick="go('single')" id="nv-single"><span class="ico">👤</span>單球員分析</div>
-    <div class="nav-item" onclick="go('players')" id="nv-players"><span class="ico">📋</span>球員數據庫</div>
-    <div class="nav-item" onclick="go('ranking')" id="nv-ranking"><span class="ico">🏅</span>市場排名表</div>
-    <div class="nav-item" onclick="go('form')" id="nv-form"><span class="ico">📈</span>近期狀態調整</div>
-    <div class="nav-item" onclick="go('picks')" id="nv-picks"><span class="ico">⭐</span>精選投注推介</div>
+    <div class="nav-item" onclick="go('single')" id="nv-single"><span class="ico">👤</span>查球員</div>
+    <div class="nav-item" onclick="go('players')" id="nv-players"><span class="ico">📋</span>球員資料</div>
+    <div class="nav-item" onclick="go('ranking')" id="nv-ranking"><span class="ico">🏅</span>概率排名</div>
+    <div class="nav-item" onclick="go('form')" id="nv-form"><span class="ico">📈</span>近期狀態</div>
+    <div class="nav-item" onclick="go('picks')" id="nv-picks"><span class="ico">⭐</span>精選推介</div>
     <div class="nav-sec">市場</div>
-    <div class="nav-item" onclick="go('card')" id="nv-card"><span class="ico">🟨</span>黃牌市場</div>
-    <div class="nav-item" onclick="go('shots')" id="nv-shots"><span class="ico">🎯</span>射門市場</div>
-    <div class="nav-item" onclick="go('ga')" id="nv-ga"><span class="ico">⚽</span>進球/助攻</div>
-    <div class="nav-item" onclick="go('btts')" id="nv-btts"><span class="ico">🚩</span>BTTS + 角球</div>
-    <div class="nav-item" onclick="go('matchup')" id="nv-matchup"><span class="ico">⚔️</span>對位黃牌風險</div>
+    <div class="nav-item" onclick="go('card')" id="nv-card"><span class="ico">🟨</span>黃牌</div>
+    <div class="nav-item" onclick="go('shots')" id="nv-shots"><span class="ico">🎯</span>射門</div>
+    <div class="nav-item" onclick="go('ga')" id="nv-ga"><span class="ico">⚽</span>入球 / 助攻</div>
+    <div class="nav-item" onclick="go('btts')" id="nv-btts"><span class="ico">🚩</span>BTTS / 角球</div>
+    <div class="nav-item" onclick="go('matchup')" id="nv-matchup"><span class="ico">⚔️</span>對位分析</div>
     <div class="nav-sec">數據</div>
-    <div class="nav-item" onclick="go('refs')" id="nv-refs"><span class="ico">📐</span>球證數據</div>
-    <div class="nav-item" onclick="go('teams')" id="nv-teams"><span class="ico">🏟</span>球隊犯規係數</div>
+    <div class="nav-item" onclick="go('refs')" id="nv-refs"><span class="ico">📐</span>球證</div>
+    <div class="nav-item" onclick="go('teams')" id="nv-teams"><span class="ico">🏟</span>球隊特性</div>
   </nav>
   <div class="nav-footer">
     <div class="season-pill">2025/26</div>
@@ -384,48 +527,49 @@ tbody tr:hover td{background:rgba(255,255,255,.015)}
 
 <!-- ═══ PAGE: Today Match ═══ -->
 <div class="page on" id="pg-match">
-  <div class="sh mb20"><h2>今場分析</h2><div class="sh-line"></div><p>自動掃描兩隊所有球員，生成所有市場概率</p></div>
+  <div class="sh mb20"><h2>今場分析</h2><div class="sh-line"></div><p>選擇今日賽事，自動計算所有球員的概率同推薦投注</p></div>
   <div class="cg cg4 mb16">
-    <div class="field"><label>🏠 主隊</label><select id="m-h"></select></div>
-    <div class="field"><label>✈️ 客隊</label><select id="m-a"></select></div>
-    <div class="field"><label>🟨 球證</label><select id="m-r"></select></div>
+    <div class="field"><label>🏠 主隊</label><select id="m-h" onchange="syncSplitTeams()"></select></div>
+    <div class="field"><label>✈️ 客隊</label><select id="m-a" onchange="syncSplitTeams()"></select></div>
+    <div class="field"><label>🟨 球證</label><select id="m-r" onchange="syncSplitRef()"></select></div>
     <div class="field" style="display:flex;align-items:flex-end">
       <button class="btn btn-p btn-full" id="m-btn" onclick="runMatch()">⚡ 分析今場</button>
     </div>
   </div>
   <div id="m-out" style="display:none">
     <div class="sub-h mb12">比賽概覽</div>
-    <div class="grid g4 mb20" id="m-ov"></div>
+    <div id="m-ov" class="mb16"></div>
     <div class="sub-h mb12">今場市場概率</div>
-    <div class="mkt-grid" id="m-mkts"></div>
-    <div class="sub-h mb12">🏆 最高Edge推薦</div>
+    <div id="m-mkts" class="mb16"></div>
+    <div class="sub-h mb12">🏆 最高優勢推薦</div>
+    <div class="legend mb12">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--fire)"></div>65%+ 極高</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>45-65% 高</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--acid)"></div>30-45% 中</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--i2)"></div>&lt;30% 低</div>
+      <div style="margin-left:auto;font-size:10px;color:var(--i2)">Edge = 我方概率 - 莊家隱含概率（正數 = 有優勢）</div>
+    </div>
     <div class="bet-list mb20" id="m-bets"></div>
     <div class="sub-h mb12">🔗 最佳Bet Builder組合</div>
     <div id="m-combos" class="mb20"></div>
     <div class="sub-h mb12">球員詳細概率</div>
     <div class="pills" id="m-pills"></div>
-    <div class="tabs" id="m-tabs">
-      <button class="tab on" onclick="mTab('yc',this)">🟨 黃牌</button>
-      <button class="tab" onclick="mTab('ga',this)">⚽ G/A</button>
-      <button class="tab" onclick="mTab('sh',this)">🎯 射門</button>
-      <button class="tab" onclick="mTab('sot',this)">🎯 射正</button>
-      <button class="tab" onclick="mTab('fc',this)">⚠️ 犯規</button>
-      <button class="tab" onclick="mTab('fd',this)">🛡 被犯規</button>
-      <button class="tab" onclick="mTab('tk',this)">🦵 剷截</button>
+    <!-- bet365-style category tabs -->
+    <div class="b365-tabs mb0" id="m-cat-tabs">
+      <button class="b365-tab on" onclick="mCat('all',this)">Popular</button>
+      <button class="b365-tab" onclick="mCat('card',this)">Cards</button>
+      <button class="b365-tab" onclick="mCat('shots',this)">Shots</button>
+      <button class="b365-tab" onclick="mCat('goals',this)">Goals</button>
+      <button class="b365-tab" onclick="mCat('fouls',this)">Fouls</button>
+      <button class="b365-tab" onclick="mCat('tackles',this)">Tackles</button>
     </div>
-    <div id="m-tab-yc" class="tp on"></div>
-    <div id="m-tab-ga" class="tp"></div>
-    <div id="m-tab-sh" class="tp"></div>
-    <div id="m-tab-sot" class="tp"></div>
-    <div id="m-tab-fc" class="tp"></div>
-    <div id="m-tab-fd" class="tp"></div>
-    <div id="m-tab-tk" class="tp"></div>
+    <div id="m-accordion"></div>
   </div>
-</div>
-
-<!-- ═══ PAGE: Bet Builder ═══ -->
-<div class="page" id="pg-builder">
-  <div class="sh mb20"><h2>Bet Builder</h2><div class="sh-line"></div><p>最多10個 leg · 球員按主客隊過濾 · 相關性折扣調整</p></div>
+</div><div class="page" id="pg-builder">
+  <button class="bb-split-btn" id="bb-split-btn" onclick="toggleBBSplit()">
+    ◫ &nbsp;&nbsp;今場分析 + Bet Builder 左右並排
+  </button>
+  <div class="sh mb20"><h2>Bet Builder</h2><div class="sh-line"></div><p>選擇球員同投注項目，計算組合過關概率</p></div>
   <div class="cg cg4 mb16">
     <div class="field"><label>主隊</label><select id="bb-h" onchange="bbRebuild()"></select></div>
     <div class="field"><label>客隊</label><select id="bb-a" onchange="bbRebuild()"></select></div>
@@ -443,7 +587,7 @@ tbody tr:hover td{background:rgba(255,255,255,.015)}
 
 <!-- ═══ PAGE: Single Player ═══ -->
 <div class="page" id="pg-single">
-  <div class="sh mb20"><h2>單球員分析</h2><div class="sh-line"></div><p>選擇球員，三個市場深度分析 + 可調整次數線</p></div>
+  <div class="sh mb20"><h2>單球員分析</h2><div class="sh-line"></div><p>輸入球員名，即睇佢今場各種行為的概率</p></div>
   <div class="cg cg4 mb16">
     <div class="field"><label>球員</label><select id="sp-p" onchange="renderSingle()"></select></div>
     <div class="field"><label>球證</label><select id="sp-r" onchange="renderSingle()"></select></div>
@@ -459,7 +603,7 @@ tbody tr:hover td{background:rgba(255,255,255,.015)}
 
 <!-- ═══ PAGE: Players DB ═══ -->
 <div class="page" id="pg-players">
-  <div class="sh mb20"><h2>球員數據庫</h2><div class="sh-line"></div><p>368名球員完整數據</p></div>
+  <div class="sh mb20"><h2>球員數據庫</h2><div class="sh-line"></div><p>查閱所有球員的犯規、射門、入球等數據</p></div>
   <div class="cg cg4 mb12">
     <div class="field" style="grid-column:span 2">
       <label>搜尋</label>
@@ -491,19 +635,19 @@ tbody tr:hover td{background:rgba(255,255,255,.015)}
 
 <!-- ═══ PAGE: Rankings ═══ -->
 <div class="page" id="pg-ranking">
-  <div class="sh mb20"><h2>市場排名表</h2><div class="sh-line"></div><p>三個市場概率由高至低排列（聯賽均值球證）</p></div>
+  <div class="sh mb20"><h2>市場排名表</h2><div class="sh-line"></div><p>全聯賽球員概率排名 — 搵出最值得投注的球員</p></div>
   <div class="tabs">
-    <button class="tab on" onclick="rankTab('fc',this)">🟥 犯規 ≥1</button>
-    <button class="tab" onclick="rankTab('fd',this)">🟦 被犯規 ≥1</button>
-    <button class="tab" onclick="rankTab('tk',this)">🟩 剷截 ≥2</button>
-    <button class="tab" onclick="rankTab('yc',this)">🟨 黃牌</button>
+    <button class="tab on" onclick="rankTab('fc',this)">Fouls Committed</button>
+    <button class="tab" onclick="rankTab('fd',this)">To Be Fouled</button>
+    <button class="tab" onclick="rankTab('tk',this)">Tackles</button>
+    <button class="tab" onclick="rankTab('yc',this)">Player Card</button>
   </div>
   <div id="rank-tbl"></div>
 </div>
 
 <!-- ═══ PAGE: Form ═══ -->
 <div class="page" id="pg-form">
-  <div class="sh mb20"><h2>近期狀態調整</h2><div class="sh-line"></div><p>近5場數據 · 停賽係數 · 狀態調整後概率</p></div>
+  <div class="sh mb20"><h2>近期狀態調整</h2><div class="sh-line"></div><p>根據近5場實際表現調整概率 — 比純賽季均值更準確</p></div>
   <div class="cg cg3 mb16">
     <div class="field"><label>球證</label><select id="fm-r" onchange="renderForm()"></select></div>
     <div class="field"><label>主隊（作參考）</label><select id="fm-h" onchange="renderForm()"></select></div>
@@ -514,13 +658,18 @@ tbody tr:hover td{background:rgba(255,255,255,.015)}
 
 <!-- ═══ PAGE: Picks ═══ -->
 <div class="page" id="pg-picks">
-  <div class="sh mb20"><h2>精選投注推介</h2><div class="sh-line"></div><p>各市場最高概率球員（聯賽均值球證基準）</p></div>
+  <div class="sh mb20"><h2>精選投注推介</h2><div class="sh-line"></div><p>本週精選 — 各個投注市場概率最高的球員</p></div>
   <div id="picks-out"></div>
 </div>
 
 <!-- ═══ PAGE: Card Market ═══ -->
 <div class="page" id="pg-card">
-  <div class="sh mb20"><h2>黃牌市場</h2><div class="sh-line"></div><p>Player Card — YC概率 × 球證 × 對手犯規係數</p></div>
+  <div class="sh mb20"><h2>黃牌市場</h2><div class="sh-line"></div></div>
+  <div class="help-bar mb20">
+    <span class="hi">🟨</span>
+    <div>計算每位球員今場<strong>收黃牌</strong>的概率。影響因素：<strong>球員黃牌率</strong>、<strong>球證嚴格程度</strong>（Attwell 每場 4.9 張 vs Pawson 2.5 張）、<strong>對手犯規強度</strong>（打 Wolves 比打 Arsenal 更容易犯規）。<br>
+    <strong>公允賠率</strong> = 1 ÷ 概率，若莊家賠率高於此數即有優勢。</div>
+  </div>
   <div class="cg cg5 mb16">
     <div class="field"><label>主隊</label><select id="c-h" onchange="renderCard()"></select></div>
     <div class="field"><label>客隊</label><select id="c-a" onchange="renderCard()"></select></div>
@@ -543,7 +692,7 @@ tbody tr:hover td{background:rgba(255,255,255,.015)}
 
 <!-- ═══ PAGE: Shots ═══ -->
 <div class="page" id="pg-shots">
-  <div class="sh mb20"><h2>射門市場</h2><div class="sh-line"></div><p>Shots / SOT — Poisson P(X≥n)</p></div>
+  <div class="sh mb20"><h2>射門市場</h2><div class="sh-line"></div><p>計算球員今場射門/射正達到某個次數的概率</p></div>
   <div class="cg cg4 mb16">
     <div class="field"><label>主隊</label><select id="sh-h" onchange="renderShots()"></select></div>
     <div class="field"><label>客隊</label><select id="sh-a" onchange="renderShots()"></select></div>
@@ -561,7 +710,7 @@ tbody tr:hover td{background:rgba(255,255,255,.015)}
 
 <!-- ═══ PAGE: G/A ═══ -->
 <div class="page" id="pg-ga">
-  <div class="sh mb20"><h2>進球 / 助攻</h2><div class="sh-line"></div><p>Score / Assist / Score or Assist</p></div>
+  <div class="sh mb20"><h2>進球 / 助攻</h2><div class="sh-line"></div><p>計算球員今場入球、助攻或兩者其一的概率</p></div>
   <div class="cg cg4 mb16">
     <div class="field"><label>主隊</label><select id="ga-h" onchange="renderGa()"></select></div>
     <div class="field"><label>客隊</label><select id="ga-a" onchange="renderGa()"></select></div>
@@ -578,7 +727,7 @@ tbody tr:hover td{background:rgba(255,255,255,.015)}
 
 <!-- ═══ PAGE: BTTS + Corners ═══ -->
 <div class="page" id="pg-btts">
-  <div class="sh mb20"><h2>BTTS + 角球</h2><div class="sh-line"></div><p>主/客場分拆角球數據 · Poisson O/U概率</p></div>
+  <div class="sh mb20"><h2>BTTS + 角球</h2><div class="sh-line"></div><p>計算兩隊今場總角球數，同兩隊是否都入球</p></div>
   <div class="cg cg4 mb20">
     <div class="field"><label>主隊</label><select id="bt-h" onchange="renderBtts()"></select></div>
     <div class="field"><label>客隊</label><select id="bt-a" onchange="renderBtts()"></select></div>
@@ -592,7 +741,7 @@ tbody tr:hover td{background:rgba(255,255,255,.015)}
 
 <!-- ═══ PAGE: Matchup ═══ -->
 <div class="page" id="pg-matchup">
-  <div class="sh mb20"><h2>對位黃牌風險</h2><div class="sh-line"></div><p>攻方侵略性 → 守方犯規概率上升</p></div>
+  <div class="sh mb20"><h2>對位黃牌風險</h2><div class="sh-line"></div><p>分析某個攻方球員侵略性強，守方球員收黃牌機會幾多</p></div>
   <div class="cg cg4 mb16">
     <div class="field"><label>攻方所屬球隊</label><select id="mu-ah" onchange="updateMatchupSels()"></select></div>
     <div class="field"><label>守方所屬球隊</label><select id="mu-dh" onchange="updateMatchupSels()"></select></div>
@@ -608,14 +757,19 @@ tbody tr:hover td{background:rgba(255,255,255,.015)}
 
 <!-- ═══ PAGE: Refs ═══ -->
 <div class="page" id="pg-refs">
-  <div class="sh mb20"><h2>球證數據</h2><div class="sh-line"></div><p>EPL 2025/26 全季16位球證嚴格程度</p></div>
+  <div class="sh mb20"><h2>球證數據</h2><div class="sh-line"></div></div>
+  <div class="help-bar mb16">
+    <span class="hi">📐</span>
+    <div>球證嚴格程度直接影響黃牌概率。<strong>Stuart Attwell</strong> 平均 4.9 張黃牌/場（最嚴），<strong>Craig Pawson</strong> 只有 2.5 張（最寬鬆）。<br>
+    <strong>係數</strong>：&gt;1.0 = 比聯賽平均嚴，&lt;1.0 = 比平均寬鬆。係數 1.42 即黃牌概率上升 42%。</div>
+  </div>
   <div class="grid g4 mb20" id="ref-ov"></div>
   <div class="tw"><div class="ts"><table id="ref-tbl"></table></div></div>
 </div>
 
 <!-- ═══ PAGE: Teams ═══ -->
 <div class="page" id="pg-teams">
-  <div class="sh mb20"><h2>球隊犯規係數</h2><div class="sh-line"></div><p>主客場犯規強度分析</p></div>
+  <div class="sh mb20"><h2>球隊犯規係數</h2><div class="sh-line"></div><p>各球隊犯規特性 — 高犯規球隊令對手球員犯規概率上升</p></div>
   <div class="tw"><div class="ts"><table id="team-tbl"></table></div></div>
 </div>
 
@@ -709,10 +863,10 @@ function pSels(ids,all=false){
 }
 
 // ══════════════ NAVIGATION ══════════════
-const PAGE_TITLES={match:'今場分析',builder:'Bet Builder',single:'單球員分析',
-  players:'球員數據庫',ranking:'市場排名表',form:'近期狀態調整',picks:'精選投注推介',
-  card:'黃牌市場',shots:'射門市場',ga:'進球/助攻',btts:'BTTS + 角球',
-  matchup:'對位黃牌風險',refs:'球證數據',teams:'球隊犯規係數'};
+const PAGE_TITLES={match:'今場分析',builder:'Bet Builder',single:'查球員',
+  players:'球員資料',ranking:'概率排名',form:'近期狀態',picks:'精選推介',
+  card:'黃牌市場',shots:'射門市場',ga:'進球/助攻',btts:'BTTS / 角球',
+  matchup:'對位分析',refs:'球證數據',teams:'球隊特性'};
 function go(pg){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('on'));
@@ -766,6 +920,8 @@ function runMatch(){
       }
       doMatch(h,a,ypg);
       document.getElementById('m-out').style.display='block';
+      // Auto-sync to BB when in split mode
+      syncSplitTeams(); syncSplitRef();
     }catch(e){
       console.error('Match analysis error:',e);
       document.getElementById('m-out').innerHTML='<div style="padding:20px;color:var(--fire)">分析出錯: '+e.message+'</div>';
@@ -798,49 +954,65 @@ function doMatch(home,away,ypg){
   try{renderMBets();}catch(e){console.warn('renderMBets:',e);}
   try{renderMCombos();}catch(e){console.warn('renderMCombos:',e);}
   try{renderMPills();}catch(e){console.warn('renderMPills:',e);}
-  try{renderMTab('yc');}catch(e){console.warn('renderMTab:',e);}
+  mCatActive='all';
+  // Reset cat tabs
+  document.querySelectorAll('#m-cat-tabs .b365-tab').forEach((b,i)=>b.classList.toggle('on',i===0));
+  try{renderAccordion();}catch(e){console.warn('renderAccordion:',e);}
 }
 function renderMOv(){
   const{home,away,ypg,refName,R,all,total_c}=mS;
   const ht=tMap[home],at=tMap[away];
   const hYC=all.filter(x=>x.pr?.yc>=0.15).length;
-  document.getElementById('m-ov').innerHTML=[
-    {l:'主隊',v:home,s:ht?`犯規 ${ht.fpg.toFixed(1)}/場`:'',c:'var(--ice)'},
-    {l:'客隊',v:away,s:at?`犯規 ${at.fpg.toFixed(1)}/場`:'',c:'var(--acid)'},
-    {l:'球證係數',v:R.toFixed(2)+'×',s:`${refName} · ${ypg.toFixed(1)} YC/場`,c:R>1.2?'var(--fire)':R>1.0?'var(--gold)':'var(--acid)'},
-    {l:'主隊主場係數',v:ht?(ht.h_coeff.toFixed(2)+'×'):'-',s:'犯規係數',c:ht&&ht.h_coeff>1.08?'var(--fire)':'var(--acid)'},
-    {l:'客隊客場係數',v:at?(at.a_coeff.toFixed(2)+'×'):'-',s:'犯規係數',c:at&&at.a_coeff>1.08?'var(--fire)':'var(--acid)'},
-    {l:'BTTS概率',v:pct(mS.btts),s:'Poisson+歷史加權',c:mS.btts>=0.6?'var(--acid)':mS.btts>=0.45?'var(--gold)':'var(--fire)'},
-    {l:'預期總角球',v:total_c.toFixed(1),s:`主攻 ${mS.home_cf.toFixed(1)} + 客攻 ${mS.away_ca.toFixed(1)}`,c:'var(--lav)'},
-    {l:'高YC風險球員',v:hYC,s:'概率≥15%',c:'var(--gold)'},
-  ].map(c=>`<div class="card"><div class="lbl">${c.l}</div><div class="val" style="color:${c.c}">${c.v}</div><div class="sub">${c.s}</div></div>`).join('');
+  // bet365-style match header
+  const matchHdr = `<div class="match-header mb16">
+    <div class="match-teams">
+      <div class="match-vs">${home} <span style="color:var(--i2);font-weight:400;font-size:12px">vs</span> ${away}</div>
+      <div class="match-meta">EPL 2025/26 · 球證: ${refName}</div>
+      <div class="match-stats-row">
+        <span class="match-stat-pill">球證係數 <strong style="color:${R>1.2?'var(--fire)':R>1.0?'var(--gold)':'var(--acid)'}">${R.toFixed(2)}×</strong></span>
+        <span class="match-stat-pill">主隊犯規 <strong>${ht?ht.fpg.toFixed(1):'-'}/場</strong></span>
+        <span class="match-stat-pill">客隊犯規 <strong>${at?at.fpg.toFixed(1):'-'}/場</strong></span>
+        <span class="match-stat-pill">預期角球 <strong>${total_c.toFixed(1)}</strong></span>
+        <span class="match-stat-pill">BTTS <strong style="color:${mS.btts>=0.6?'var(--acid)':mS.btts>=0.45?'var(--gold)':'var(--fire)'}">${pct(mS.btts)}</strong></span>
+        <span class="match-stat-pill">高YC球員 <strong style="color:var(--gold)">${hYC}</strong></span>
+      </div>
+    </div>
+  </div>`;
+  document.getElementById('m-ov').innerHTML = matchHdr;
+  document.getElementById('m-ov').className = '';
 }
+
 function renderMMkts(){
   const{btts,ph,pa,btts_h,btts_m,total_c,home,away,ypg,R}=mS;
   const pO=n=>poi(total_c,n+1);
-  const lines=[8,9,10,11,12].map(n=>`<span class="c-chip" style="color:${pO(n)>=0.55?'var(--acid)':pO(n)>=0.40?'var(--gold)':'var(--i2)'}">O${n}.5: ${pct(pO(n))}</span>`).join('');
+  const lines=[8,9,10,11,12].map(n=>`
+    <span class="match-stat-pill" style="cursor:default">O${n}.5: <strong style="color:${pO(n)>=0.55?'var(--acid)':pO(n)>=0.40?'var(--gold)':'var(--i2)'}">${pct(pO(n))}</strong></span>
+  `).join('');
   document.getElementById('m-mkts').innerHTML=`
-    <div class="mkt-card"><div class="mkt-lbl">⚽ BTTS</div>
-      <div class="mkt-big" style="color:${btts>=0.6?'var(--acid)':btts>=0.45?'var(--gold)':'var(--fire)'}">${pct(btts)}</div>
-      <div class="mkt-sub">P(${home}進球) ${pct(ph)}<br>P(${away}進球) ${pct(pa)}<br>歷史 ${pct(btts_h)} · 模型 ${pct(btts_m)}</div>
-    </div>
-    <div class="mkt-card"><div class="mkt-lbl">🚩 角球</div>
-      <div class="mkt-big" style="color:var(--ice)">${total_c.toFixed(1)}</div>
-      <div class="mkt-sub">預期總角球/場</div>
-      <div class="c-lines">${lines}</div>
-    </div>
-    <div class="mkt-card"><div class="mkt-lbl">🟨 球證係數</div>
-      <div class="mkt-big" style="color:${R>1.2?'var(--fire)':R>1.0?'var(--gold)':'var(--acid)'}">${R.toFixed(2)}×</div>
-      <div class="mkt-sub">${mS.refName}<br>${ypg.toFixed(1)} YC/場 · 均值 2.1</div>
+    <div class="b365-section mb16">
+      <div class="b365-header" onclick="toggleAcc('mkt-btts')">
+        <div><div class="b365-title">Both Teams to Score / Corners</div></div>
+        <div class="b365-chevron" id="mkt-btts-chev">▼</div>
+      </div>
+      <div class="b365-body" id="mkt-btts" style="padding:12px 16px">
+        <div class="match-stats-row" style="margin-bottom:8px">
+          <span class="match-stat-pill">BTTS <strong style="color:${btts>=0.6?'var(--acid)':btts>=0.45?'var(--gold)':'var(--fire)'}">${pct(btts)}</strong></span>
+          <span class="match-stat-pill">P(${home} Score) <strong>${pct(ph)}</strong></span>
+          <span class="match-stat-pill">P(${away} Score) <strong>${pct(pa)}</strong></span>
+          <span class="match-stat-pill">Corners <strong>${total_c.toFixed(1)}</strong></span>
+        </div>
+        <div class="match-stats-row">${lines}</div>
+      </div>
     </div>`;
 }
+
 function renderMBets(){
   const{all}=mS;
   const FO={yc:5.0,ga:2.2,sh2:2.0,sot1:1.5,fc:1.45,fd:1.60,tk:1.80};
-  const mkts=[{k:'yc',l:'🟨 黃牌',c:'var(--gold)'},{k:'ga',l:'⚽ G/A',c:'var(--acid)'},
-    {k:'sh2',l:'🎯 射門≥2',c:'var(--ice)'},{k:'sot1',l:'🎯 射正≥1',c:'var(--ice)'},
-    {k:'fc',l:'⚠️ 犯規≥1',c:'var(--fire)'},{k:'fd',l:'🛡 被犯規≥1',c:'var(--teal)'},
-    {k:'tk',l:'🦵 剷截≥2',c:'var(--lav)'}];
+  const mkts=[{k:'yc',l:'Player Card',c:'var(--gold)'},{k:'ga',l:'Score or Assist',c:'var(--acid)'},
+    {k:'sh2',l:'Player Shots ≥2',c:'var(--ice)'},{k:'sot1',l:'Shots on Target ≥1',c:'var(--ice)'},
+    {k:'fc',l:'Fouls Committed ≥1',c:'var(--fire)'},{k:'fd',l:'To Be Fouled ≥1',c:'var(--teal)'},
+    {k:'tk',l:'Player Tackles ≥2',c:'var(--lav)'}];
   const cands=[];
   all.forEach(pl=>{if(!pl.pr)return;mkts.forEach(m=>{
     const p=pl.pr[m.k];if(!p||p<0.1)return;
@@ -863,7 +1035,7 @@ function renderMBets(){
 function renderMCombos(){
   const{all}=mS;const DISC=[1,0.97,0.93,0.90,0.86,0.83,0.80];
   const mk2=[{k:'yc',l:'黃牌',c:'var(--gold)'},{k:'ga',l:'G/A',c:'var(--acid)'},
-    {k:'fc',l:'犯規≥1',c:'var(--fire)'},{k:'fd',l:'被犯規≥1',c:'var(--teal)'}];
+    {k:'fc',l:'Player Fouls Committed ≥1',c:'var(--fire)'},{k:'fd',l:'Player To Be Fouled ≥1',c:'var(--teal)'}];
   const c2=[];
   all.forEach(pl=>{if(!pl.pr)return;mk2.forEach(m=>{
     const p=pl.pr[m.k];if(!p||p<0.2)return;
@@ -897,7 +1069,92 @@ function renderMPills(){
     `<div class="pill ${mAF===p.id?'on':''}" onclick="mFilt('${p.id}')">${p.l}</div>`
   ).join('');
 }
-function mFilt(f){mAF=f;renderMPills();renderMTab(mAT);}
+
+// ── bet365-style accordion rendering ──────────────────────────────────────────
+let mCatActive = 'all';
+
+const MARKET_CATS = {
+  all:    [{k:'yc',l:'Player Card'},{k:'ga',l:'Score or Assist'},{k:'sh2',l:'Player Shots ≥2'},
+            {k:'sot1',l:'Shots on Target ≥1'},{k:'fc',l:'Fouls Committed ≥1'},
+            {k:'fd',l:'To Be Fouled ≥1'},{k:'tk',l:'Player Tackles ≥2'}],
+  card:   [{k:'yc',l:'Player Card'}],
+  shots:  [{k:'sh1',l:'Player Shots ≥1'},{k:'sh2',l:'Player Shots ≥2'},{k:'sh3',l:'Player Shots ≥3'},
+            {k:'sot1',l:'Shots on Target ≥1'},{k:'sot2',l:'Shots on Target ≥2'}],
+  goals:  [{k:'g',l:'Player to Score'},{k:'a',l:'Player to Assist'},{k:'ga',l:'Player to Score or Assist'}],
+  fouls:  [{k:'fc',l:'Player Fouls Committed ≥1'},{k:'fd',l:'Player To Be Fouled ≥1'}],
+  tackles:[{k:'tk',l:'Player Tackles ≥2'}],
+};
+
+function mCat(cat, btn){
+  mCatActive = cat;
+  document.querySelectorAll('#m-cat-tabs .b365-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderAccordion();
+}
+
+function renderAccordion(){
+  if(!mS) return;
+  const markets = MARKET_CATS[mCatActive] || MARKET_CATS.all;
+  const acc = document.getElementById('m-accordion');
+  if(!acc) return;
+
+  let data = mS.all.filter(x=>{
+    if(mAF==='home') return x.isHome;
+    if(mAF==='away') return !x.isHome;
+    if(['F','M','D'].includes(mAF)) return x.p===mAF;
+    return true;
+  }).filter(x=>x.pr);
+
+  acc.innerHTML = markets.map(m=>{
+    const sorted = [...data]
+      .filter(x=> (x.pr[m.k]||0) > 0.05)
+      .sort((a,b)=>(b.pr[m.k]||0)-(a.pr[m.k]||0))
+      .slice(0,15);
+    if(!sorted.length) return '';
+
+    const rows = sorted.map(pl=>{
+      const p = pl.pr[m.k]||0;
+      const col = p>=0.65?'var(--fire)':p>=0.45?'var(--gold)':p>=0.30?'var(--acid)':'var(--i2)';
+      const w = Math.min(p*100,100).toFixed(1);
+      const fairOdds = (1/Math.max(p,0.01)).toFixed(2);
+      return `<div class="b365-player-row">
+        <div>
+          <div class="b365-player-name">${pl.n}</div>
+          <div class="b365-player-team">${pl.t} · ${pl.p} · ${pl.isHome?'Home':'Away'}</div>
+        </div>
+        <div class="b365-prob-badge">
+          <div>
+            <div class="b365-bar"><div class="b365-bar-fill" style="width:${w}%;background:${col}"></div></div>
+          </div>
+          <div class="b365-pct" style="color:${col}">${pct(p)}</div>
+          <div class="b365-fair-odds">@${fairOdds}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    const id = 'm-acc-'+m.k;
+    return `<div class="b365-section">
+      <div class="b365-header" onclick="toggleAcc('${id}')">
+        <div>
+          <div class="b365-title">${m.l}</div>
+          </div>
+        <div class="b365-chevron" id="${id}-chev">▼</div>
+      </div>
+      <div class="b365-body" id="${id}">${rows}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleAcc(id){
+  const body = document.getElementById(id);
+  const chev = document.getElementById(id+'-chev');
+  if(!body) return;
+  const isOpen = body.classList.toggle('open');
+  if(chev) chev.classList.toggle('open', isOpen);
+}
+
+// Patch mFilt to also re-render accordion
+function mFilt(f){mAF=f;renderMPills();renderAccordion();}
 function mTab(t,btn){
   document.querySelectorAll('#m-tabs .tab').forEach(b=>b.classList.remove('on'));
   document.querySelectorAll('#pg-match .tp').forEach(p=>p.classList.remove('on'));
@@ -943,8 +1200,8 @@ function renderMTab(tab){
 
 // ══════════════ BET BUILDER ══════════════
 let bbLegs=[];
-const BB_MKTS=['黃牌 (YC)','入球','助攻','G or A','射門≥1','射門≥2','射門≥3','射正≥1','射正≥2','犯規≥1','被犯規≥1','剷截≥2'];
-const BB_KEYS={'黃牌 (YC)':'yc','入球':'g','助攻':'a','G or A':'ga','射門≥1':'sh1','射門≥2':'sh2','射門≥3':'sh3','射正≥1':'sot1','射正≥2':'sot2','犯規≥1':'fc','被犯規≥1':'fd','剷截≥2':'tk'};
+const BB_MKTS=['Player Card','Player to Score','Player to Assist','Player to Score or Assist','Player Shots ≥1','Player Shots ≥2','Player Shots ≥3','Player Shots on Target ≥1','Player Shots on Target ≥2','Player Fouls Committed ≥1','Player To Be Fouled ≥1','Player Tackles ≥2'];
+const BB_KEYS={'Player Card':'yc','Player to Score':'g','Player to Assist':'a','Player to Score or Assist':'ga','Player Shots ≥1':'sh1','Player Shots ≥2':'sh2','Player Shots ≥3':'sh3','Player Shots on Target ≥1':'sot1','Player Shots on Target ≥2':'sot2','Player Fouls Committed ≥1':'fc','Player To Be Fouled ≥1':'fd','Player Tackles ≥2':'tk'};
 const BB_DISC=[1,1,0.97,0.93,0.90,0.86,0.83,0.80,0.77,0.74,0.71];
 function bbTeamPlayers(isHome){
   const h=document.getElementById('bb-h').value,a=document.getElementById('bb-a').value;
@@ -975,7 +1232,7 @@ function bbUpdLeg(idx){
 function bbAdd(){
   if(bbLegs.length>=10)return;
   const idx=bbLegs.length;
-  bbLegs.push({player:'',market:'黃牌 (YC)',isHome:true,odds:''});
+  bbLegs.push({player:'',market:'Player Card',isHome:true,odds:''});
   const home=document.getElementById('bb-h').value;
   const pl=home?bbTeamPlayers(true):[];
   const div=document.createElement('div');
@@ -1082,9 +1339,9 @@ function renderSingle(){
     {n:'犯規',lam:fcLam,line:spLines.fc,k:'fc',col:'var(--fire)',max:0.97},
     {n:'被犯規',lam:fdLam,line:spLines.fd,k:'fd',col:'var(--teal)',max:0.97},
     {n:'剷截',lam:tkLam,line:spLines.tk,k:'tk',col:'var(--lav)',max:0.97},
-    {n:'入球',lam:pl.g*(isHome?1.07:0.96),line:1,k:'g',col:'var(--acid)',max:0.97},
-    {n:'助攻',lam:pl.a*(isHome?1.07:0.96),line:1,k:'a',col:'var(--ice)',max:0.97},
-    {n:'G or A',lam:(pl.g+pl.a)*(isHome?1.07:0.96),line:1,k:'ga',col:'var(--acid)',max:0.97},
+    {n:'Player to Score',lam:pl.g*(isHome?1.07:0.96),line:1,k:'g',col:'var(--acid)',max:0.97},
+    {n:'Player to Assist',lam:pl.a*(isHome?1.07:0.96),line:1,k:'a',col:'var(--ice)',max:0.97},
+    {n:'Player to Score or Assist',lam:(pl.g+pl.a)*(isHome?1.07:0.96),line:1,k:'ga',col:'var(--acid)',max:0.97},
     {n:'射門',lam:pl.sh*(isHome?1.08:0.95),line:2,k:'sh',col:'var(--gold)',max:0.97},
     {n:'射正',lam:pl.sot*(isHome?1.08:0.95),line:1,k:'sot',col:'var(--gold)',max:0.97},
     {n:'黃牌',lam:pl.yc_pg,line:1,k:'yc',col:'var(--gold)',max:0.80,ycAdj:R*Math.sqrt(opp_fc)},
@@ -1165,9 +1422,9 @@ function renderPlayers(){
     <td class="mono">${p.sot.toFixed(2)}</td>
   </tr>`).join('');
   document.getElementById('p-tbl').innerHTML=`<div class="tw"><div class="ts"><table>
-    <thead><tr><th>#</th><th>球員</th><th>球隊</th><th>位</th><th>場</th><th>YC</th>
-      <th>YC/場</th><th>犯規/場</th><th>被犯/場</th><th>剷截/場</th>
-      <th>G/場</th><th>A/場</th><th>射門/場</th><th>射正/場</th></tr></thead>
+    <thead><tr><th>#</th><th>球員</th><th>球隊</th><th>位置</th><th>出場</th><th>黃牌</th>
+      <th>黃牌/場</th><th>犯規/場</th><th>被犯規/場</th><th>剷截/場</th>
+      <th>入球/場</th><th>助攻/場</th><th>射門/場</th><th>射正/場</th></tr></thead>
     <tbody>${rows}</tbody>
   </table></div></div>`;
   document.getElementById('p-ct').textContent=`顯示 ${Math.min(100,d.length)} / ${d.length} 名球員`;
@@ -1261,11 +1518,11 @@ function renderForm(){
 function renderPicks(){
   const R=rc(2.1);
   const picks=[
-    {title:'🟥 犯規 ≥1 高概率',players:['Igor Thiago','João Gomes','Saša Lukić','Randal Kolo Muani','Raúl Jiménez'],key:'fc',col:'var(--fire)',bg:'var(--fire2)'},
-    {title:'🟦 被犯規 ≥1 高概率',players:['Jack Grealish','Elliot Anderson','Bruno Guimarães','Alex Scott','Crysencio Summerville'],key:'fd',col:'var(--teal)',bg:'var(--teal2)'},
-    {title:'🟩 剷截 ≥2 高概率',players:['James Garner','Elliot Anderson','Ryan Gravenberch','Mateus Fernandes','Declan Rice'],key:'tk',col:'var(--acid)',bg:'var(--acid3)'},
-    {title:'🟨 黃牌 高概率',players:['Cristian Romero','Tim Iroegbunam','Diego Gómez','Moisés Caicedo','João Gomes'],key:'yc',col:'var(--gold)',bg:'var(--gold2)'},
-    {title:'⚽ G or A 高概率',players:['Erling Haaland','Mohamed Salah','Bruno Fernandes','Viktor Gyökeres','Alexander Isak'],key:'ga',col:'var(--acid)',bg:'var(--acid3)'},
+    {title:'Fouls Committed — 今日最高概率',players:['Igor Thiago','João Gomes','Saša Lukić','Randal Kolo Muani','Raúl Jiménez'],key:'fc',col:'var(--fire)',bg:'var(--fire2)'},
+    {title:'To Be Fouled — 今日最高概率',players:['Jack Grealish','Elliot Anderson','Bruno Guimarães','Alex Scott','Crysencio Summerville'],key:'fd',col:'var(--teal)',bg:'var(--teal2)'},
+    {title:'Player Tackles — 今日最高概率',players:['James Garner','Elliot Anderson','Ryan Gravenberch','Mateus Fernandes','Declan Rice'],key:'tk',col:'var(--acid)',bg:'var(--acid3)'},
+    {title:'Player Card — 今日最高概率',players:['Cristian Romero','Tim Iroegbunam','Diego Gómez','Moisés Caicedo','João Gomes'],key:'yc',col:'var(--gold)',bg:'var(--gold2)'},
+    {title:'Score or Assist — 今日最高概率',players:['Erling Haaland','Mohamed Salah','Bruno Fernandes','Viktor Gyökeres','Alexander Isak'],key:'ga',col:'var(--acid)',bg:'var(--acid3)'},
   ];
   document.getElementById('picks-out').innerHTML=picks.map(sec=>`
     <div class="picks-section">
@@ -1329,7 +1586,7 @@ function renderCard(){
     <thead><tr><th>球員</th><th>球隊</th><th>位</th><th>YC概率</th><th>YC/場</th>
     <th>累積YC</th><th>距停賽</th><th>對手犯規係數</th><th>公允賠率</th><th>主客</th></tr></thead>
     <tbody>${rows||'<tr><td colspan="10" class="empty">無結果</td></tr>'}</tbody>
-  </table></div></div><div style="text-align:center;padding:7px;color:var(--i2);font-size:10px">${res.length} 名球員 (≥${(minP*100).toFixed(0)}%)</div>`;
+  </table></div></div><div style="text-align:center;padding:7px;color:var(--i2);font-size:10px">${res.length} 名球員 符合條件（概率≥${(minP*100).toFixed(0)}%）</div>`;
 }
 
 // ══════════════ SHOTS MARKET ══════════════
@@ -1381,7 +1638,7 @@ function renderGa(){
     const prob=Math.min(poi(lam,1)*R,0.97);
     return{...pl,prob};
   }).filter(x=>x.prob>0.05&&(x.g>0||x.a>0)).sort((a,b)=>b.prob-a.prob);
-  const lbl={ga:'G or A',g:'進球',a:'助攻'}[type];
+  const lbl={ga:'Player to Score or Assist',g:'進球',a:'Player to Assist'}[type];
   const rows=res.slice(0,40).map(p=>`<tr>
     <td style="font-weight:700">${p.n}</td>
     <td style="color:${p.isHome?'var(--ice)':'var(--acid)'}">${p.t}</td>
@@ -1626,6 +1883,185 @@ function toggleTheme(){
   }
 })();
 
+
+
+
+// ══ Split Panel JS ══════════════════════════════════════════════════════════
+let bbSplitOn = false;
+
+function toggleBBSplit(){
+  bbSplitOn = !bbSplitOn;
+  const btn = document.getElementById('bb-split-btn');
+  if(bbSplitOn){
+    activateSplit();
+    if(btn){ btn.classList.add('on'); btn.innerHTML='✕ &nbsp;取消並排'; }
+  } else {
+    deactivateSplit();
+    if(btn){ btn.classList.remove('on'); btn.innerHTML='◫ &nbsp;&nbsp;今場分析 + Bet Builder 左右並排'; }
+  }
+}
+
+function activateSplit(){
+  // Move real pg-match and pg-builder into split panes
+  const main = document.querySelector('.main');
+  const pgMatch = document.getElementById('pg-match');
+  const pgBuilder = document.getElementById('pg-builder');
+  const splitWrap = document.getElementById('split-container');
+  const leftContent = document.getElementById('split-match-content');
+  const rightContent = document.getElementById('split-bb-content');
+
+  // Move pages into split panes
+  leftContent.appendChild(pgMatch);
+  rightContent.appendChild(pgBuilder);
+
+  // Show both
+  pgMatch.classList.add('on');
+  pgBuilder.classList.add('on');
+  pgMatch.style.cssText = 'display:block!important;padding:0;animation:none';
+  pgBuilder.style.cssText = 'display:block!important;padding:0;animation:none';
+
+  // Hide split button inside BB (avoid duplicate)
+  const innerBtn = pgBuilder.querySelector('.bb-split-btn');
+  if(innerBtn) innerBtn.style.display = 'none';
+
+  // Show split layout
+  splitWrap.style.display = 'grid';
+
+  // Sync teams
+  syncSplitTeams();
+}
+
+function deactivateSplit(){
+  const main = document.querySelector('.main');
+  const pgMatch = document.getElementById('pg-match');
+  const pgBuilder = document.getElementById('pg-builder');
+  const splitWrap = document.getElementById('split-container');
+
+  // Move pages back to main
+  main.appendChild(pgMatch);
+  main.appendChild(pgBuilder);
+
+  // Hide split layout
+  splitWrap.style.display = 'none';
+
+  // Restore BB page state
+  document.querySelectorAll('.page').forEach(p=>{
+    p.classList.remove('on');
+    p.style.cssText = '';
+  });
+  pgBuilder.classList.add('on');
+
+  // Restore split button visibility
+  const innerBtn = pgBuilder.querySelector('.bb-split-btn');
+  if(innerBtn) innerBtn.style.display = '';
+
+  // Update nav
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('on'));
+  document.getElementById('nv-builder')?.classList.add('on');
+  document.getElementById('pt').textContent = 'Bet Builder';
+
+  bbSplitOn = false;
+  const btn = document.getElementById('bb-split-btn');
+  if(btn){ btn.classList.remove('on'); btn.innerHTML='◫ &nbsp;&nbsp;今場分析 + Bet Builder 左右並排'; }
+}
+
+// ── go() - when split is ON, navigation hides split temporarily ─────────────
+const _goOrig = go;
+go = function(pg){
+  if(bbSplitOn){
+    if(pg === 'builder'){
+      // Already in split, just make sure it's visible
+      document.getElementById('split-container').style.display = 'grid';
+      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('on'));
+      document.getElementById('nv-builder')?.classList.add('on');
+      document.getElementById('pt').textContent = '今場分析  +  Bet Builder';
+      return;
+    }
+    // Going to another page: hide split container, show that page
+    // BUT keep split state alive (bbSplitOn stays true)
+    document.getElementById('split-container').style.display = 'none';
+    // Move pages back to main temporarily so they don't disappear
+    const main = document.querySelector('.main');
+    const pgMatch = document.getElementById('pg-match');
+    const pgBuilder = document.getElementById('pg-builder');
+    main.appendChild(pgMatch);
+    main.appendChild(pgBuilder);
+    pgMatch.style.cssText = '';
+    pgBuilder.style.cssText = '';
+    pgMatch.classList.remove('on');
+    pgBuilder.classList.remove('on');
+    // Navigate normally
+    _goOrig(pg);
+    return;
+  }
+  _goOrig(pg);
+};
+
+// ── nav-builder click: if split was ON, re-activate ─────────────────────────
+const _origNavBuilder = document.getElementById('nv-builder');
+function goBuilder(){
+  if(bbSplitOn){
+    // Re-activate split
+    activateSplit();
+    document.getElementById('split-container').style.display = 'grid';
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('on'));
+    document.getElementById('nv-builder')?.classList.add('on');
+    document.getElementById('pt').textContent = '今場分析  +  Bet Builder';
+  } else {
+    go('builder');
+  }
+}
+
+// ── Sync match teams → BB ────────────────────────────────────────────────────
+function syncSplitTeams(){
+  if(!bbSplitOn) return;
+  const h = document.getElementById('m-h')?.value;
+  const a = document.getElementById('m-a')?.value;
+  const bbH = document.getElementById('bb-h');
+  const bbA = document.getElementById('bb-a');
+  if(bbH && h) bbH.value = h;
+  if(bbA && a) bbA.value = a;
+  if(h || a) bbRebuild();
+}
+function syncSplitRef(){
+  if(!bbSplitOn) return;
+  const r = document.getElementById('m-r')?.value;
+  const bbR = document.getElementById('bb-r');
+  if(bbR && r) bbR.value = r;
+}
+
+// ── Draggable gutter ─────────────────────────────────────────────────────────
+(function(){
+  let dragging=false, startX=0, leftW=0;
+  document.addEventListener('mousedown',e=>{
+    const g=document.getElementById('split-gutter');
+    if(!g||!g.contains(e.target)) return;
+    dragging=true; g.classList.add('drag');
+    startX=e.clientX;
+    leftW=document.getElementById('split-left')?.offsetWidth||0;
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove',e=>{
+    if(!dragging) return;
+    const lp=document.getElementById('split-left');
+    const rp=document.getElementById('split-right');
+    if(!lp||!rp) return;
+    const container=document.getElementById('split-container');
+    const total=container?.offsetWidth||window.innerWidth-210;
+    const newW=Math.max(320,Math.min(total-320, leftW+(e.clientX-startX)));
+    lp.style.flex='none'; lp.style.width=newW+'px';
+    rp.style.flex='1'; rp.style.width='';
+  });
+  document.addEventListener('mouseup',()=>{
+    if(!dragging) return;
+    dragging=false;
+    document.getElementById('split-gutter')?.classList.remove('drag');
+  });
+})();
+
+window.exitSplit = deactivateSplit;
+
+
 // ══════════════ BOOT ══════════════
 init();
 </script>
@@ -1735,5 +2171,30 @@ self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>
   navigator.serviceWorker.register(URL.createObjectURL(swB)).catch(()=>{});
 }
 </script>
+
+<!-- Split container (hidden by default, activated by toggleBBSplit) -->
+<div id="split-container" class="split-container" style="display:none;position:fixed;top:45px;left:210px;right:0;bottom:0;z-index:50;background:var(--bg0)">
+  <div class="split-left" id="split-left">
+    <div class="split-label">
+      <span>⚡ 今場分析</span>
+      <span style="font-size:9px;color:var(--i2)">在此設定比賽</span>
+    </div>
+    <div id="split-match-content"></div>
+  </div>
+  <div class="split-gutter" id="split-gutter">
+    <div class="split-gutter-handle">
+      <div class="split-gutter-dot"></div>
+      <div class="split-gutter-dot"></div>
+      <div class="split-gutter-dot"></div>
+    </div>
+  </div>
+  <div class="split-right" id="split-right">
+    <div class="split-label">
+      <span>🔗 Bet Builder</span>
+      <button onclick="deactivateSplit()" style="background:none;border:none;color:var(--i2);cursor:pointer;font-size:11px;font-family:inherit;padding:2px 8px;border-radius:4px;border:1px solid var(--bd);">✕ 取消並排</button>
+    </div>
+    <div id="split-bb-content"></div>
+  </div>
+</div>
 </body>
 </html>
