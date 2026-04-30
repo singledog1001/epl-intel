@@ -601,7 +601,8 @@ body.ucl-mode .ucl-banner{display:flex;}
   <div style="display:flex;gap:8px;margin-bottom:16px">
     <button class="btn btn-p" style="flex:1" id="m-btn" onclick="runMatch()">⚡ 分析今場</button>
   </div>
-  <div id="m-out" style="display:none"><div id="m-err-msg" style="color:var(--fire);padding:8px;display:none"></div>
+  <div id="m-derby-banner" class="mb8"></div>
+<div id="m-out" style="display:none"><div id="m-err-msg" style="color:var(--fire);padding:8px;display:none"></div>
     <div class="sub-h mb12">比賽概覽</div>
     <div id="m-ov" class="mb16"></div>
     <div class="sub-h mb12">今場市場概率</div>
@@ -1022,21 +1023,46 @@ body.ucl-mode .ucl-banner{display:flex;}
     <div>用 <strong>Dixon-Coles Poisson 模型</strong>計算每個比分概率，基於兩隊 xG 攻守強度 + 主客場優勢。<br>
     <strong>公允賠率</strong> = 1 ÷ 概率。莊家賠率高於此數即有優勢。最高概率波膽通常係 1-1、0-0、1-0。</div>
   </div>
-  <div class="cg mb16" style="grid-template-columns:1fr 1fr 1fr auto">
+  <div class="cg mb8" style="grid-template-columns:1fr 1fr">
     <div class="field"><label>🏠 主隊</label><select id="cs-h" onchange="renderScore()"></select></div>
     <div class="field"><label>✈️ 客隊</label><select id="cs-a" onchange="renderScore()"></select></div>
+  </div>
+  <div class="cg mb8" style="grid-template-columns:1fr 1fr 1fr">
     <div class="field"><label>⚡ 比賽重要性</label>
       <select id="cs-mi" onchange="renderScore()">
         <option value="1.0">正常</option>
-        <option value="1.12">關鍵戰</option>
-        <option value="1.22">決勝戰</option>
-        <option value="0.88">無競爭</option>
+        <option value="1.12">關鍵戰 +12%</option>
+        <option value="1.22">決勝戰 +22%</option>
+        <option value="0.88">無競爭 -12%</option>
       </select>
     </div>
-    <div class="field" style="display:flex;align-items:flex-end">
-      <button class="btn btn-p btn-full" onclick="renderScore()">🎯 計算</button>
+    <div class="field"><label>🏠 主隊形勢</label>
+      <select id="cs-h-sit" onchange="renderScore()">
+        <option value="normal">正常</option>
+        <option value="title">爭冠（動力↑攻）</option>
+        <option value="euro">爭歐戰席（動力↑）</option>
+        <option value="rel">護級（壓力大）</option>
+        <option value="safe">保級已定（鬆弛）</option>
+        <option value="eliminate">已出局（保留體力）</option>
+      </select>
+    </div>
+    <div class="field"><label>✈️ 客隊形勢</label>
+      <select id="cs-a-sit" onchange="renderScore()">
+        <option value="normal">正常</option>
+        <option value="title">爭冠（動力↑攻）</option>
+        <option value="euro">爭歐戰席（動力↑）</option>
+        <option value="rel">護級（壓力大）</option>
+        <option value="safe">保級已定（鬆弛）</option>
+        <option value="eliminate">已出局（保留體力）</option>
+      </select>
     </div>
   </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px">
+    <button class="btn btn-p" style="flex:1" onclick="renderScore()">🎯 計算全部比分</button>
+    <button class="btn" style="flex:none;background:var(--lav2);border-color:rgba(167,139,250,.3);color:var(--lav)" onclick="smartRecommend()">🤖 AI 推薦3個波膽</button>
+  </div>
+  <div id="cs-recommend" class="mb16"></div>
+  <div id="cs-derby-banner"></div>
   <div id="cs-out"></div>
 </div>
 
@@ -1223,6 +1249,7 @@ function runMatch(){
     try{
       const h=document.getElementById('m-h').value;
       const a=document.getElementById('m-a').value;
+      const _d=getDerby(h,a); window.currentDerbyIntensity=_d?_d.intensity:1.0;
       const ypg=parseFloat(document.getElementById('m-r').value)||2.1;
       if(!h||!a){
         document.getElementById('m-out').innerHTML='<div class="empty" style="color:var(--gold)">⚠️ 請先選擇主隊同客隊</div>';
@@ -2379,9 +2406,13 @@ function goBuilder(){
 
 // ── Sync match teams → BB ────────────────────────────────────────────────────
 function syncSplitTeams(){
+  // Check derby for match page
+  const _mh=document.getElementById('m-h')?.value;
+  const _ma=document.getElementById('m-a')?.value;
+  if(_mh&&_ma) checkDerbyBanner(_mh,_ma,'m-derby-banner');
   if(!bbSplitOn) return;
-  const h = document.getElementById('m-h')?.value;
-  const a = document.getElementById('m-a')?.value;
+  const h = _mh;
+  const a = _ma;
   const bbH = document.getElementById('bb-h');
   const bbA = document.getElementById('bb-a');
   if(bbH && h) bbH.value = h;
@@ -3058,7 +3089,7 @@ function probs(pl, home, away, isHome, ypg){
   if(INJ === 0) return {yc:0,ga:0,g:0,a:0,sh1:0,sh2:0,sh3:0,sot1:0,sot2:0,fc:0,fd:0,tk:0,suspended:false,injured:true};
 
   return {
-    yc:   Math.min(poi(yc_eff,1) * R * Math.sqrt(FC) * YCA * INJ * MI, 0.55),
+    yc:   Math.min(poi(yc_eff,1) * R * Math.sqrt(FC) * YCA * INJ * MI * (window.currentDerbyIntensity||1.0), 0.55),
     ga:   Math.min(poi((g_eff+a_eff)*ha_a*def_str,1) * R * INJ, 0.80),
     g:    Math.min(poi(g_eff*ha_a*def_str,1) * R * INJ, 0.80),
     a:    Math.min(poi(a_eff*ha_a*def_str,1) * R * INJ, 0.75),
@@ -3067,7 +3098,7 @@ function probs(pl, home, away, isHome, ypg){
     sh3:  Math.min(poi(sh_eff*ha_s*def_str,3) * R * INJ, 0.65),
     sot1: Math.min(poi(sot_eff*ha_s*def_str,1) * R * INJ, 0.78),
     sot2: Math.min(poi(sot_eff*ha_s*def_str,2) * R * INJ, 0.65),
-    fc:   Math.min(poi(fc_eff*FC,1) * R * INJ * MI, 0.72),
+    fc:   Math.min(poi(fc_eff*FC,1) * R * INJ * MI * (window.currentDerbyIntensity||1.0), 0.72),
     fd:   Math.min(poi(fd_eff,1) * R * INJ, 0.80),
     tk:   Math.min(poi(pl.tk*MI,2) * R * INJ, 0.82),
     // Extra markets
@@ -3305,7 +3336,16 @@ function renderScore(){
   const out=document.getElementById('cs-out');
   if(!out) return;
   if(!home||!away){out.innerHTML='<div class="empty">請選擇主隊同客隊</div>';return;}
-  const res=correctScoreMatrix(home,away,mi);
+  const hSit=document.getElementById('cs-h-sit')?.value||'normal';
+  const aSit=document.getElementById('cs-a-sit')?.value||'normal';
+  // Check derby
+  checkDerbyBanner(home, away, 'cs-derby-banner');
+  const derby = home && away ? getDerby(home,away) : null;
+  const derbyMI = derby ? derby.derby_mi : 1.0;
+  const effectiveMI = mi * (derby ? Math.max(mi, derbyMI) / Math.max(mi, 1) : 1);
+  const res = (hSit!=='normal'||aSit!=='normal'||derby) ?
+    enhancedMatrix(home, away, effectiveMI, hSit, aSit) :
+    correctScoreMatrix(home, away, mi);
   if(!res){out.innerHTML='<div class="empty" style="color:var(--fire)">未有此球隊xG數據</div>';return;}
   const{muH,muA,mat}=res;
   const sorted=Object.entries(mat).sort((a,b)=>b[1]-a[1]);
@@ -3387,7 +3427,8 @@ function accaBuildLeg(i){
       '<div style="font-size:11px;font-weight:700;color:var(--acid);min-width:50px">LEG '+(i+1)+'</div>'+
       '<div id="acca-badge-'+i+'">'+badge+'</div>'+
       '<div style="flex:1"></div>'+
-      '<button onclick="accaRemove('+i+')" style="background:none;border:none;color:var(--i3);cursor:pointer;font-size:14px;padding:2px 6px">✕</button>'+
+      '<button onclick="accaSmartForLeg('+i+')" style="background:none;border:1px solid rgba(167,139,250,.3);color:var(--lav);cursor:pointer;font-size:10px;padding:3px 8px;border-radius:4px;font-family:inherit;font-weight:700">🤖 推薦</button>'+
+        '<button onclick="accaRemove('+i+')" style="background:none;border:none;color:var(--i3);cursor:pointer;font-size:14px;padding:2px 6px">✕</button>'+
     '</div>'+
     '<div class="cg" style="grid-template-columns:1fr 1fr 1fr auto;gap:8px">'+
       '<div class="field" style="margin:0"><label style="font-size:10px">主隊</label>'+
@@ -3457,6 +3498,7 @@ function accaSetHome(i, val){
   if(sSel) sSel.innerHTML = accaBuildScoreOpts(i);
   const badge = document.getElementById('acca-badge-'+i);
   if(badge) badge.innerHTML = '';
+  checkDerbyBanner(accaLegs[i].home, accaLegs[i].away, 'acca-derby-'+i);
 }
 
 function accaSetAway(i, val){
@@ -3466,6 +3508,7 @@ function accaSetAway(i, val){
   if(sSel) sSel.innerHTML = accaBuildScoreOpts(i);
   const badge = document.getElementById('acca-badge-'+i);
   if(badge) badge.innerHTML = '';
+  checkDerbyBanner(accaLegs[i].home, accaLegs[i].away, 'acca-derby-'+i);
 }
 
 function accaSetScore(i, val){
@@ -3591,6 +3634,440 @@ function initAcca(){
     accaAdd();
   } else {
     accaRender();
+  }
+}
+
+
+// ══ Situation coefficients ════════════════════════════════════════════════════
+const SIT_COEFF = {
+  normal:    {att:1.00, def:1.00, label:'正常'},
+  title:     {att:1.18, def:0.95, label:'爭冠'},       // attack more, slight def risk
+  euro:      {att:1.10, def:0.98, label:'爭歐戰'},
+  rel:       {att:1.05, def:1.08, label:'護級'},       // tight defence, desperate attack
+  safe:      {att:0.88, def:0.90, label:'保級已定'},   // relaxed
+  eliminate: {att:0.82, def:0.85, label:'已出局'},     // resting players
+};
+
+// Form adjustment: use last 5 goals scored/conceded vs season avg
+function formGoalAdj(teamName, isAttack){
+  // Find all players from this team in form data
+  const teamPlayers = D.players.filter(p=>p.t===teamName);
+  if(!teamPlayers.length) return 1.0;
+  const formPlayers = teamPlayers.filter(p=>D.form?.[p.n]?.gms5>=3);
+  if(!formPlayers.length) return 1.0;
+
+  if(isAttack){
+    // Sum recent goals/90 vs season goals/90
+    const recentG = formPlayers.reduce((s,p)=>{
+      const f=D.form[p.n]; return s+(f.g5/f.gms5);
+    },0);
+    const seasonG = formPlayers.reduce((s,p)=>s+p.g,0);
+    if(seasonG<=0) return 1.0;
+    return Math.max(0.6, Math.min(1.6, 0.5 + 0.5*(recentG/seasonG)));
+  } else {
+    // For defence: use form fc (pressing) as proxy for defensive intensity
+    const recentFC = formPlayers.reduce((s,p)=>{
+      const f=D.form[p.n]; return s+(f.fc5/f.gms5);
+    },0);
+    const seasonFC = formPlayers.reduce((s,p)=>s+p.fc,0);
+    if(seasonFC<=0) return 1.0;
+    return Math.max(0.7, Math.min(1.3, 1.0/(0.5+0.5*(recentFC/seasonFC))));
+  }
+}
+
+// Injury impact: % of key attackers/defenders injured
+function injuryImpact(teamName, isAttack){
+  const teamPlayers = D.players.filter(p=>p.t===teamName);
+  const pos = isAttack ? ['F','M'] : ['D','G'];
+  const relevant = teamPlayers.filter(p=>pos.includes(p.p));
+  if(!relevant.length) return 1.0;
+  let penalty = 0;
+  relevant.forEach(p=>{
+    const inj = injuryData[p.n];
+    if(inj?.status==='out')   penalty += (p.apps/Math.max(...relevant.map(x=>x.apps)));
+    if(inj?.status==='doubt') penalty += (p.apps/Math.max(...relevant.map(x=>x.apps)))*0.4;
+  });
+  return Math.max(0.5, 1 - penalty*0.15);
+}
+
+// Enhanced xG calculation with all factors
+function enhancedMu(home, away, isHomeTeam, mi, hSit, aSit){
+  const ch = cMap[home], ca = cMap[away];
+  if(!ch||!ca) return 1.2;
+  const AVG_H = LEAGUE==='UCL'?1.65:1.45;
+  const AVG_A = LEAGUE==='UCL'?1.25:1.15;
+
+  if(isHomeTeam){
+    const attH = ch.xgf/AVG_H;
+    const defA = ca.xga/AVG_A;
+    const sitH = SIT_COEFF[hSit]||SIT_COEFF.normal;
+    const sitA = SIT_COEFF[aSit]||SIT_COEFF.normal;
+    const formAdj = formGoalAdj(home, true);
+    const injAdj  = injuryImpact(home, true);
+    const defAdj  = injuryImpact(away, false) * sitA.def;
+    const derby = getDerby(home, away);
+    const derbyAtt = derby ? Math.min(1.15, derby.intensity * 0.9) : 1.0;
+    return Math.max(0.2, Math.min(5.0,
+      attH * defA * AVG_H * 1.08 * mi *
+      sitH.att * formAdj * injAdj * defAdj * derbyAtt
+    ));
+  } else {
+    const attA = ca.xgf/AVG_A;
+    const defH = ch.xga/AVG_H;
+    const sitH = SIT_COEFF[hSit]||SIT_COEFF.normal;
+    const sitA = SIT_COEFF[aSit]||SIT_COEFF.normal;
+    const formAdj = formGoalAdj(away, true);
+    const injAdj  = injuryImpact(away, true);
+    const defAdj  = injuryImpact(home, false) * sitH.def;
+    const derby2 = getDerby(home, away);
+    const derbyAtt2 = derby2 ? Math.min(1.15, derby2.intensity * 0.9) : 1.0;
+    return Math.max(0.2, Math.min(5.0,
+      attA * defH * AVG_A * mi *
+      sitA.att * formAdj * injAdj * defAdj * derbyAtt2
+    ));
+  }
+}
+
+// Build full score matrix with enhanced mu
+function enhancedMatrix(home, away, mi, hSit, aSit){
+  const muH = enhancedMu(home,away,true,mi,hSit,aSit);
+  const muA = enhancedMu(home,away,false,mi,hSit,aSit);
+  const MAX=7, mat={};
+  let total=0;
+  for(let h=0;h<=MAX;h++){
+    for(let a=0;a<=MAX;a++){
+      const p=pmfCS(muH,h)*pmfCS(muA,a)*dcCorr(muH,muA,h,a);
+      mat[h+'-'+a]=p; total+=p;
+    }
+  }
+  for(const k in mat) mat[k]/=total;
+  return{muH,muA,mat};
+}
+
+// Main smart recommend function
+function smartRecommend(){
+  const home = document.getElementById('cs-h')?.value;
+  const away = document.getElementById('cs-a')?.value;
+  const mi   = parseFloat(document.getElementById('cs-mi')?.value)||1.0;
+  const hSit = document.getElementById('cs-h-sit')?.value||'normal';
+  const aSit = document.getElementById('cs-a-sit')?.value||'normal';
+  const out  = document.getElementById('cs-recommend');
+  if(!out) return;
+  if(!home||!away){ out.innerHTML='<div class="empty" style="color:var(--gold)">請先選擇主隊同客隊</div>'; return; }
+
+  const res = enhancedMatrix(home, away, mi, hSit, aSit);
+  const{muH,muA,mat}=res;
+  const sorted = Object.entries(mat).sort((a,b)=>b[1]-a[1]);
+
+  // Injury summary
+  const injuries = D.players.filter(p=>(p.t===home||p.t===away)&&injuryData[p.n]?.status!=='fit'&&injuryData[p.n]?.status);
+  const injText = injuries.length ? injuries.map(p=>`${p.n}(${injuryData[p.n].status==='out'?'❌傷停':'⚠️存疑'})`).join(' · ') : '無';
+
+  // Form summary
+  const hFormPlayers = D.players.filter(p=>p.t===home&&D.form?.[p.n]?.gms5>=3);
+  const aFormPlayers = D.players.filter(p=>p.t===away&&D.form?.[p.n]?.gms5>=3);
+  const hFormG = hFormPlayers.length ? (hFormPlayers.reduce((s,p)=>{const f=D.form[p.n];return s+f.g5/f.gms5;},0)).toFixed(2) : 'N/A';
+  const aFormG = aFormPlayers.length ? (aFormPlayers.reduce((s,p)=>{const f=D.form[p.n];return s+f.g5/f.gms5;},0)).toFixed(2) : 'N/A';
+
+  // Top 3 picks with reasoning
+  const top3 = sorted.slice(0,3);
+  const sitHL = (SIT_COEFF[hSit]||SIT_COEFF.normal).label;
+  const sitAL = (SIT_COEFF[aSit]||SIT_COEFF.normal).label;
+
+  const cards = top3.map(([score,prob],rank)=>{
+    const[sh,sa]=score.split('-').map(Number);
+    const result=sh>sa?'主勝':sh===sa?'和局':'客勝';
+    const rCol=sh>sa?'var(--acid)':sh===sa?'var(--gold)':'var(--ice)';
+    const fair=(1/Math.max(prob,0.001)).toFixed(1);
+    const medal=['🥇','🥈','🥉'][rank];
+    // Build reasoning
+    const reasons=[];
+    if(muH>1.8) reasons.push(`${home}進攻強(xG ${muH.toFixed(2)})`);
+    if(muA<0.9) reasons.push(`${away}進攻弱`);
+    if(muA>1.8) reasons.push(`${away}進攻強(xG ${muA.toFixed(2)})`);
+    if(muH<0.9) reasons.push(`${home}進攻弱`);
+    if(hSit!=='normal') reasons.push(`${home}${sitHL}`);
+    if(aSit!=='normal') reasons.push(`${away}${sitAL}`);
+    if(injuries.filter(p=>p.t===home&&injuryData[p.n]?.status==='out').length) reasons.push(`${home}有主力傷停`);
+    if(injuries.filter(p=>p.t===away&&injuryData[p.n]?.status==='out').length) reasons.push(`${away}有主力傷停`);
+    if(hFormPlayers.length) reasons.push(`${home}近況${hFormG}G/場`);
+    if(reasons.length===0) reasons.push('基於xG攻守強度及主客場優勢');
+
+    return `<div class="card mb8" style="border:1px solid rgba(167,139,250,.25);padding:14px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span style="font-size:20px">${medal}</span>
+        <div style="font-size:24px;font-weight:800;font-family:var(--dm);color:var(--i0)">${score}</div>
+        <div style="font-size:12px;font-weight:700;color:${rCol}">${result}</div>
+        <div style="flex:1"></div>
+        <div style="text-align:right">
+          <div style="font-size:16px;font-weight:800;color:var(--lav)">${(prob*100).toFixed(2)}%</div>
+          <div style="font-size:10px;color:var(--i2)">公允 @${fair}</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--i2);line-height:1.6">
+        💡 ${reasons.join(' · ')}
+      </div>
+      <button onclick="accaAddFromRecommend('${home}','${away}','${score}')"
+        style="margin-top:8px;padding:5px 12px;font-size:11px;background:var(--lav2);border:1px solid rgba(167,139,250,.3);color:var(--lav);border-radius:var(--r2);cursor:pointer;font-family:inherit;font-weight:700">
+        ➕ 加入過關波膽
+      </button>
+    </div>`;
+  }).join('');
+
+  // Analysis summary
+  const derbyInfo = getDerby(home, away);
+  const derbyLine = derbyInfo ?
+    `<div style="color:var(--fire);font-weight:700">🔥 ${derbyInfo.name} · 打吡強度×${derbyInfo.intensity.toFixed(2)} · ${derbyInfo.desc}</div>` : '';
+  const analysisHTML = `<div style="background:var(--bg3);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;font-size:11px;color:var(--i1);line-height:1.8">
+    <div style="font-weight:700;color:var(--i0);margin-bottom:6px">🤖 AI 分析</div>
+    ${derbyLine}
+    <div>📊 預期入球：<strong style="color:var(--acid)">${home} ${muH.toFixed(2)}</strong> vs <strong style="color:var(--ice)">${away} ${muA.toFixed(2)}</strong></div>
+    <div>⚡ 形勢：${home} <span style="color:var(--gold)">${sitHL}</span> · ${away} <span style="color:var(--gold)">${sitAL}</span></div>
+    <div>🏃 近況入球/場（主）：${hFormG === 'N/A' ? '無近況數據' : hFormG + ' (季平均對比，數值愈高愈佳)'}</div>
+    <div>🏥 傷停：${injText}</div>
+    <div style="margin-top:4px;font-size:10px;color:var(--i3)">基於 Dixon-Coles xG + 近況加權 + 傷停係數 + 形勢調整 + 打吡係數</div>
+  </div>`;
+
+  out.innerHTML = '<div class="sub-h mb10">🤖 AI 推薦波膽（Top 3）</div>' + analysisHTML + cards;
+}
+
+// Add recommended score directly to acca page
+function accaAddFromRecommend(home, away, score){
+  if(accaLegs.length>=8){ alert('已達最多8場'); return; }
+  accaLegs.push({home,away,score,odds:null});
+  // Switch to acca page
+  go('acca');
+  initAcca();
+  alert('已加入過關：'+home+' vs '+away+' '+score);
+}
+
+
+function accaSmartForLeg(i){
+  const leg = accaLegs[i];
+  if(!leg.home||!leg.away){ alert('請先選擇主客隊'); return; }
+  const res = enhancedMatrix(leg.home, leg.away, 1.0, 'normal', 'normal');
+  const sorted = Object.entries(res.mat).sort((a,b)=>b[1]-a[1]);
+  const top3 = sorted.slice(0,3).map(([s,p])=>s+' ('+(p*100).toFixed(1)+'%)').join('  |  ');
+  const choice = prompt('推薦波膽（選一個輸入，例如 1-1）：\n\n'+top3+'\n\n直接輸入比分：');
+  if(choice && res.mat[choice.trim()] !== undefined){
+    accaLegs[i].score = choice.trim();
+    const sSel = document.getElementById('acca-s-'+i);
+    if(sSel){ sSel.innerHTML = accaBuildScoreOpts(i); sSel.value = choice.trim(); }
+    accaUpdateBadge(i);
+  } else if(choice) {
+    alert('比分格式唔啱，請輸入例如 1-1 或 2-0');
+  }
+}
+
+
+// ══ Derby / Rivalry Database ══════════════════════════════════════════════════
+const DERBY_DATA = {
+  // key: sorted team pair "TeamA|TeamB" (alphabetical)
+  // val: {name, emoji, intensity (1.0-1.35), desc}
+
+  // ── 🔴 Tier 1: Iconic National Rivalries ──────────────────────────────────
+  'Liverpool|Man Utd': {
+    name:'雙紅大戰', emoji:'🔴',
+    intensity:1.30,
+    desc:'Northwest Derby · 英格蘭最大世仇 · 兩城百年恩怨',
+    derby_mi: 1.18  // match importance multiplier
+  },
+  'Arsenal|Spurs': {
+    name:'北倫敦打吡', emoji:'⚪🔴',
+    intensity:1.28,
+    desc:'North London Derby · 相距4英里 · 百年宿怨',
+    derby_mi: 1.18
+  },
+  'Everton|Liverpool': {
+    name:'默西塞德打吡', emoji:'🔵🔴',
+    intensity:1.25,
+    desc:'Merseyside Derby · 友誼打吡 · 同城世仇',
+    derby_mi: 1.15
+  },
+  'Man City|Man Utd': {
+    name:'曼徹斯特打吡', emoji:'🔵🔴',
+    intensity:1.28,
+    desc:'Manchester Derby · 同城死敵',
+    derby_mi: 1.18
+  },
+  'Newcastle|Sunderland': {
+    name:'泰恩-威爾打吡', emoji:'⚫⚪',
+    intensity:1.25,
+    desc:'Tyne-Wear Derby · 英格蘭最激烈地區打吡之一',
+    derby_mi: 1.15
+  },
+
+  // ── 🟡 Tier 2: Major Rivalries ────────────────────────────────────────────
+  'Arsenal|Chelsea': {
+    name:'倫敦打吡 砲手vs藍軍', emoji:'🔴🔵',
+    intensity:1.20,
+    desc:'Arsenal-Chelsea Rivalry · 倫敦最古老頂級對決',
+    derby_mi: 1.12
+  },
+  'Arsenal|Man Utd': {
+    name:'英格蘭霸主爭奪', emoji:'🔴',
+    intensity:1.22,
+    desc:'Arsenal-Man Utd · 90年代至今最大冠軍爭奪',
+    derby_mi: 1.15
+  },
+  'Chelsea|Spurs': {
+    name:'倫敦打吡 藍軍vs熱刺', emoji:'🔵⚪',
+    intensity:1.18,
+    desc:'Chelsea-Tottenham · 西倫敦vs北倫敦',
+    derby_mi: 1.10
+  },
+  'Brighton|Crystal Palace': {
+    name:'M23打吡', emoji:'🔵🔴',
+    intensity:1.20,
+    desc:'M23 Derby · Sussex vs South London',
+    derby_mi: 1.12
+  },
+  'Brentford|Chelsea': {
+    name:'倫敦西區打吡', emoji:'🔴🔵',
+    intensity:1.15,
+    desc:'West London Derby',
+    derby_mi: 1.08
+  },
+  'Brentford|Fulham': {
+    name:'倫敦西區打吡', emoji:'🔴⚪',
+    intensity:1.18,
+    desc:'West London Derby · A316 Derby',
+    derby_mi: 1.10
+  },
+  'Chelsea|Fulham': {
+    name:'倫敦西區打吡', emoji:'🔵⚪',
+    intensity:1.15,
+    desc:'West London Derby',
+    derby_mi: 1.08
+  },
+  'Arsenal|West Ham': {
+    name:'東北倫敦打吡', emoji:'🔴🔵',
+    intensity:1.12,
+    desc:'Arsenal-West Ham Rivalry',
+    derby_mi: 1.08
+  },
+  'Chelsea|West Ham': {
+    name:'倫敦打吡', emoji:'🔵🔵',
+    intensity:1.12,
+    desc:'Chelsea-West Ham · London Derby',
+    derby_mi: 1.08
+  },
+  'Spurs|West Ham': {
+    name:'東倫敦vs北倫敦', emoji:'⚪🔵',
+    intensity:1.15,
+    desc:'Spurs-West Ham London Derby',
+    derby_mi: 1.10
+  },
+  'Chelsea|Liverpool': {
+    name:'現代霸主對決', emoji:'🔵🔴',
+    intensity:1.18,
+    desc:'Chelsea-Liverpool · 近代最多盃賽決賽對碰',
+    derby_mi: 1.12
+  },
+  'Arsenal|Liverpool': {
+    name:'傳統強隊對決', emoji:'🔴🔴',
+    intensity:1.15,
+    desc:'Arsenal-Liverpool Rivalry',
+    derby_mi: 1.10
+  },
+  'Liverpool|Man City': {
+    name:'現代冠軍爭奪', emoji:'🔴🔵',
+    intensity:1.20,
+    desc:'Liverpool-Man City · Klopp vs Guardiola 時代定義賽事',
+    derby_mi: 1.15
+  },
+  'Arsenal|Man City': {
+    name:'冠軍爭奪', emoji:'🔴🔵',
+    intensity:1.15,
+    desc:'Arsenal-Man City · 近年Title Race核心',
+    derby_mi: 1.10
+  },
+  'Leeds|Man Utd': {
+    name:'玫瑰大戰', emoji:'⚪🔴',
+    intensity:1.28,
+    desc:'War of the Roses · 約克郡vs蘭開夏 · 英格蘭最古老世仇之一',
+    derby_mi: 1.18
+  },
+  'Crystal Palace|West Ham': {
+    name:'倫敦打吡', emoji:'🔴🔵',
+    intensity:1.10,
+    desc:'South London vs East London',
+    derby_mi: 1.05
+  },
+  'Aston Villa|Wolves': {
+    name:'西米德蘭打吡', emoji:'🟣🟡',
+    intensity:1.18,
+    desc:'West Midlands Derby',
+    derby_mi: 1.10
+  },
+  'Aston Villa|West Brom': {
+    name:'第二城打吡', emoji:'🟣🔵',
+    intensity:1.18,
+    desc:'Second City Derby · Birmingham Derby',
+    derby_mi: 1.10
+  },
+  'Liverpool|Spurs': {
+    name:'利物浦vs熱刺', emoji:'🔴⚪',
+    intensity:1.12,
+    desc:'Liverpool-Tottenham Rivalry',
+    derby_mi: 1.08
+  },
+  'Man City|Spurs': {
+    name:'曼城vs熱刺', emoji:'🔵⚪',
+    intensity:1.10,
+    desc:'Man City-Spurs Rivalry',
+    derby_mi: 1.05
+  },
+  'Burnley|Spurs': {
+    name:'北方vs南方', emoji:'🔵⚪',
+    intensity:1.05,
+    desc:'Lancashire vs London',
+    derby_mi: 1.02
+  },
+  "Nott'm Forest|Wolves": {
+    name:"中部打吡", emoji:"🔴🟡",
+    intensity:1.10,
+    desc:"East Midlands vs West Midlands",
+    derby_mi: 1.05
+  },
+};
+
+// ── Derby detection ──────────────────────────────────────────────────────────
+function getDerby(home, away){
+  const key1 = [home,away].sort().join('|');
+  // Also try partial matches for team name variations
+  const allKeys = Object.keys(DERBY_DATA);
+  // Direct match
+  if(DERBY_DATA[key1]) return DERBY_DATA[key1];
+  // Partial match (e.g. "Nott'm Forest" vs "Nottingham Forest")
+  for(const k of allKeys){
+    const [a,b] = k.split('|');
+    if((home.includes(a)||a.includes(home)||home.includes(b)||b.includes(home)) &&
+       (away.includes(a)||a.includes(away)||away.includes(b)||b.includes(away))){
+      if(a!==b) return DERBY_DATA[k];
+    }
+  }
+  return null;
+}
+
+// ── Auto-trigger derby when teams selected ───────────────────────────────────
+function checkDerbyBanner(home, away, containerId){
+  const derby = getDerby(home, away);
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  if(derby){
+    el.innerHTML = '<div style="background:linear-gradient(135deg,rgba(255,77,109,.15),rgba(255,193,69,.1));' +
+      'border:1px solid rgba(255,77,109,.3);border-radius:8px;padding:10px 16px;' +
+      'display:flex;align-items:center;gap:10px;margin-bottom:12px">' +
+      '<span style="font-size:24px">' + derby.emoji + '</span>' +
+      '<div><div style="font-size:14px;font-weight:800;color:var(--fire)">' + derby.name + '</div>' +
+      '<div style="font-size:11px;color:var(--i2)">' + derby.desc + '</div>' +
+      '<div style="font-size:10px;color:var(--gold);margin-top:2px">' +
+        '🔥 打吡強度 ×' + derby.intensity.toFixed(2) + ' · 犯規/黃牌概率上升</div>' +
+      '</div></div>';
+    el.style.display = 'block';
+  } else {
+    el.innerHTML = '';
   }
 }
 
